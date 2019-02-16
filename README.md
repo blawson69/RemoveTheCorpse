@@ -14,6 +14,6 @@ RemoveTheCorpse looks for a particular status marker when in Auto Removal mode. 
 To manually remove a token from the turn tracker, type `!rtc <token_id>` into chat. Use `@{selected|token_id}` or any other method of passing the token id. This method does *not* rely on the Dead Marker. Only one token id can be removed at a time.
 
 ## Auto Removal
-You may set the script to automatically remove tokens from the turn tracker whenever the Dead Marker is set on a token. The default setting is OFF. The Config Menu has a convenient link for toggling this feature on and off, and you can also send `!rtc toggleAuto` to chat as well.
+You may set RemoveTheCorpse to automatically remove tokens from the turn tracker whenever the Dead Marker is set on a token. The default setting is OFF. The Config Menu has a link for toggling this feature on and off, and you can also send `!rtc toggleAuto` to chat as well.
 
 RemoveTheCorpse listens for status marker changes made through the TokenMod, CombatTracker, and DeathTracker scripts, so be aware of this when configuring this script.
