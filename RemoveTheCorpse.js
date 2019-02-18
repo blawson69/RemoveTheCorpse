@@ -137,7 +137,7 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
             marker_style += 'background-image: url(https://roll20.net/images/statussheet.png);'
             + 'background-repeat: no-repeat; background-position: -' + marker_pos[marker] + 'px 0;';
         } else if (marker_pos[marker] === 'X') {
-            marker_style += 'color: red; font-size: 32px; font-weight: bold; text-align: center; padding-top: 5px; overflow: hidden;';
+            marker_style += 'color: #C91010; font-size: 32px; font-weight: bold; text-align: center; padding-top: 5px; overflow: hidden;';
             X = 'X';
         } else {
             marker_style += 'background-color: ' + marker_pos[marker]
