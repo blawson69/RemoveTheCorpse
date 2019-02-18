@@ -12,7 +12,14 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
 
     //---- INFO ----//
 
-    var version = '1.0',
+    var version = '1.1',
+    styles = {
+        box:  'background-color: #fff; border: 1px solid #000; padding: 8px 10px; border-radius: 6px; margin-left: -40px; margin-right: 0px;',
+        title: 'padding: 0 0 10px 0; color: ##591209; font-size: 1.5em; font-weight: bold; font-variant: small-caps; font-family: "Times New Roman",Times,serif;',
+        button: 'background-color: #000; border-width: 0px; border-radius: 5px; padding: 5px 8px; margin: 8px 0; color: #fff; text-align: center;',
+        textButton: 'background-color: transparent; border: none; padding: 0; color: #591209; text-decoration: underline;',
+        code: 'font-family: "Courier New", Courier, monospace; background-color: #ddd; color: #000; padding: 2px 4px;',
+    },
 
     checkInstall = function () {
         if (!_.has(state, 'RemoveTheCorpse')) state['RemoveTheCorpse'] = state['RemoveTheCorpse'] || {};
@@ -29,14 +36,14 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
             if (parms[1]) {
                 switch (parms[1]) {
                     case 'toggleAuto':
-                        toggleAuto(msg);
+                        toggleAuto();
                         break;
                     case 'setMarker':
-                        setMarker(msg);
+                        setMarker(msg.content.split(/\s+/i).pop().toLowerCase());
                         break;
                     case 'help':
                     case 'config':
-                        showHelp(msg);
+                        showHelp();
                         break;
                     default:
                         removeCorpse(parms[1]);
@@ -58,46 +65,38 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
     },
 
     showHelp = function (msg) {
-        var message = '<b>!rtc help</b> or <b>!rtc config</b><br>Sends this dialog to the chat window.<br><br>'
-        + '<b>!rtc &lt;token_id&gt;</b><br>Manually removes the token with the matching id from the turn tracker.<br><br>'
-        + '<b>Auto Remove</b><br>';
+        var message = '<h4>!rtc &lt;token_id&gt;</h4>Manually removes the token with '
+        + 'the matching id from the turn tracker.<br><br><h4>Auto Remove</h4>';
         if (state['RemoveTheCorpse'].autoRemove) {
-            message += 'You are currently configured to automatically remove tokens whenever the Dead Marker is applied.<br><a href="!rtc toggleAuto">Turn Off</a><br><br>';
+            message += 'You are currently configured to automatically remove a token from the turn tracker whenever the Dead Marker is applied to it.<br><div align="center"><a style="' + styles.button + '" href="!rtc toggleAuto">Turn Off</a></div>';
         } else {
             message += 'You are currently configured only for manual removal of tokens from the turn tracker. If you wish to automatically remove tokens '
-            + 'when the Dead Marker is set on them, you may do so. This applies to <i>all</i> tokens.<br><a href="!rtc toggleAuto">Turn On</a><br><br>';
+            + 'when the Dead Marker is set on them, you may do so. This applies to <i>all</i> tokens.<br><div align="center"><a style="' + styles.button + '" href="!rtc toggleAuto">Turn On</a></div>';
         }
-        message += '<b>Dead Marker</b><br>The current status marker to indicate a dead token is set to <b><i>"' + state['RemoveTheCorpse'].deadMarker + '"</i></b>. '
-        + 'If you wish to use a different status marker, '
-        + '<a href="!rtc setMarker &#63;&#123;Status Marker&#124;dead&#124;red&#124;death-zone&#124;skull&#124;broken-skull&#124;angel-outfit&#125;">click here</a>';
+        message += '<h4>Dead Marker</h4>The current status marker to indicate a dead token is set to <b><i>"' + state['RemoveTheCorpse'].deadMarker + '"</i></b>.<br>'
+        + '<div align="center"><a style="' + styles.button + '" href="!rtc setMarker &#63;&#123;Status Marker&#124;dead&#124;red&#124;death-zone&#124;skull&#124;broken-skull&#124;angel-outfit&#125;">Change Marker</a></div>';
         showDialog('Help Menu', message);
     },
 
-    setMarker = function (msg) {
+    setMarker = function (marker) {
         var status_markers = ['blue', 'brown', 'green', 'pink', 'purple', 'red', 'yellow', 'all-for-one', 'angel-outfit', 'archery-target', 'arrowed', 'aura', 'back-pain', 'black-flag', 'bleeding-eye', 'bolt-shield', 'broken-heart', 'broken-shield', 'broken-skull', 'chained-heart', 'chemical-bolt', 'cobweb', 'dead', 'death-zone', 'drink-me', 'edge-crack', 'fishing-net', 'fist', 'fluffy-wing', 'flying-flag', 'frozen-orb', 'grab', 'grenade', 'half-haze', 'half-heart', 'interdiction', 'lightning-helix', 'ninja-mask', 'overdrive', 'padlock', 'pummeled', 'radioactive', 'rolling-bomb', 'screaming', 'sentry-gun', 'skull', 'sleepy', 'snail', 'spanner', 'stopwatch', 'strong', 'three-leaves', 'tread', 'trophy', 'white-tower'];
-        var marker = msg.content.split(/\s+/i).pop().toLowerCase();
-        if (_.has(status_markers, marker) > -1) {
+        if (_.find(status_markers, function (tmp) {return tmp === marker; })) {
             state['RemoveTheCorpse'].deadMarker = marker;
-            showDialog('Dead Marker', 'You have set the dead marker to <b><i>"' + state['RemoveTheCorpse'].deadMarker + '"</i></b>.');
         } else {
             showDialog('Error', '"' + marker + '" is an invalid status marker. Try again.');
         }
+        showHelp();
     },
 
-    toggleAuto = function (msg) {
-        if (state['RemoveTheCorpse'].autoRemove) {
-            state['RemoveTheCorpse'].autoRemove = false;
-            showDialog('Auto Remove', 'The automatic removal of a token from the turn tracker has been turned OFF. <a href="!rtc toggleAuto">Turn On</a>');
-        } else {
-            state['RemoveTheCorpse'].autoRemove = true;
-            showDialog('Auto Remove', 'The automatic removal of a token from the turn tracker has been turned ON. <a href="!rtc toggleAuto">Turn Off</a>');
-        }
+    toggleAuto = function () {
+        state['RemoveTheCorpse'].autoRemove = !state['RemoveTheCorpse'].autoRemove;
+        showHelp();
     },
 
 	showDialog = function (title, content) {
-		// Outputs a 5e Shaped dialog box for the GM
-        var message = '/w GM &{template:5e-shaped} {{title=' + title + '}} {{content=' + content + '}}';
-        sendChat('RemoveTheCorpse', message, null, {noarchive:true});
+        title = (title == '') ? '' : '<div style=\'' + styles.title + '\'>' + title + '</div>';
+        var body = '<div style=\'' + styles.box + '\'>' + title + '<div>' + content + '</div></div>';
+        sendChat('RemoveTheCorpse','/w GM ' + body, null, {noarchive:true});
 	},
 
     corpseListener = function (token, prev) {
