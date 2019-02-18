@@ -12,7 +12,8 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
 
     //---- INFO ----//
 
-    var version = '1.1',
+    var version = '1.2',
+    debugMode = false,
     styles = {
         box:  'background-color: #fff; border: 1px solid #000; padding: 8px 10px; border-radius: 6px; margin-left: -40px; margin-right: 0px;',
         title: 'padding: 0 0 10px 0; color: ##591209; font-size: 1.5em; font-weight: bold; font-variant: small-caps; font-family: "Times New Roman",Times,serif;',
@@ -26,6 +27,7 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
         if (typeof state['RemoveTheCorpse'].autoRemove == 'undefined') state['RemoveTheCorpse'].autoRemove = false;
         if (typeof state['RemoveTheCorpse'].deadMarker == 'undefined') state['RemoveTheCorpse'].deadMarker = 'dead';
         log('--> RemoveTheCorpse v' + version + ' <-- Initialized');
+        if (debugMode) showDialog('Initialized', 'RemoveTheCorpse has loaded...');
     },
 
     //----- INPUT HANDLER -----//
@@ -40,6 +42,9 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
                         break;
                     case 'setMarker':
                         setMarker(msg.content.split(/\s+/i).pop().toLowerCase());
+                        break;
+                    case 'markers':
+                        showMarkers();
                         break;
                     case 'help':
                     case 'config':
@@ -65,6 +70,7 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
     },
 
     showHelp = function (msg) {
+        var marker_style = 'margin: 5px 10px 0 0; display: block; float: left;';
         var message = '<h4>!rtc &lt;token_id&gt;</h4>Manually removes the token with '
         + 'the matching id from the turn tracker.<br><br><h4>Auto Remove</h4>';
         if (state['RemoveTheCorpse'].autoRemove) {
@@ -73,8 +79,10 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
             message += 'You are currently configured only for manual removal of tokens from the turn tracker. If you wish to automatically remove tokens '
             + 'when the Dead Marker is set on them, you may do so. This applies to <i>all</i> tokens.<br><div align="center"><a style="' + styles.button + '" href="!rtc toggleAuto">Turn On</a></div>';
         }
-        message += '<h4>Dead Marker</h4>The current status marker to indicate a dead token is set to <b><i>"' + state['RemoveTheCorpse'].deadMarker + '"</i></b>.<br>'
-        + '<div align="center"><a style="' + styles.button + '" href="!rtc setMarker &#63;&#123;Status Marker&#124;dead&#124;red&#124;death-zone&#124;skull&#124;broken-skull&#124;angel-outfit&#125;">Change Marker</a></div>';
+        message += '<h4>Dead Marker</h4>' + getMarker(state['RemoveTheCorpse'].deadMarker, marker_style)
+        + 'The current status marker to indicate a dead token during auto removal is "'
+        + state['RemoveTheCorpse'].deadMarker + '".<br>';
+        message += '<div align="center"><a style="' + styles.button + '" href="!rtc markers">Change Marker</a></div>';
         showDialog('Help Menu', message);
     },
 
@@ -83,7 +91,7 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
         if (_.find(status_markers, function (tmp) {return tmp === marker; })) {
             state['RemoveTheCorpse'].deadMarker = marker;
         } else {
-            showDialog('Error', '"' + marker + '" is an invalid status marker. Try again.');
+            showDialog('Error', 'The status marker "' + marker + '" is invalid. Please try again.');
         }
         showHelp();
     },
@@ -98,6 +106,48 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
         var body = '<div style=\'' + styles.box + '\'>' + title + '<div>' + content + '</div></div>';
         sendChat('RemoveTheCorpse','/w GM ' + body, null, {noarchive:true});
 	},
+
+    showMarkers = function () {
+        var status_markers = ['red', 'angel-outfit', 'broken-skull', 'dead', 'death-zone', 'skull'];
+        var message = '<table style="border: 0; align: center;" cellpadding="0" cellspacing="2">';
+        _.each(status_markers, function(marker) {
+            message += '<tr><td style="white-space: nowrap;">' + getMarker(marker, 'margin-right: 10px;') + '</td><td style="white-space: nowrap; width: 100%;">' + marker + '</td>';
+            if (marker == state['RemoveTheCorpse'].deadMarker) {
+                message += '<td style="text-align: center;">Current</td>';
+            } else {
+                message += '<td style="text-align: center; white-space: nowrap;"><a style="' + styles.button + '" href="!rtc setMarker ' + marker + '">Set Marker</a></td>';
+            }
+            message += '</tr>';
+        });
+        message += '<tr><td colspan="3" style="text-align: center;"><a style="' + styles.button
+        + '" href="!rtc help">&#9668; Back</a> &nbsp; <a style="' + styles.button
+        + '" href="!rtc setMarker &#63;&#123;Status Marker&#124;&#125;">Different Marker</a></td></tr>';
+        message += '</table>';
+        showDialog('Choose Dead Marker', message);
+    },
+
+    getMarker = function (marker, style = '') {
+        let X = '';
+        let marker_style = 'width: 24px; height: 24px;';
+        var marker_pos = {red:"#C91010",  blue: "#1076C9",  green: "#2FC910",  brown: "#C97310",  purple: "#9510C9",  pink: "#EB75E1",  yellow: "#E5EB75",  dead: "X",  skull: 0, sleepy: 34, "half-heart": 68, "half-haze": 102, interdiction: 136, snail: 170, "lightning-helix": 204, spanner: 238, "chained-heart": 272, "chemical-bolt": 306, "death-zone": 340, "drink-me": 374, "edge-crack": 408, "ninja-mask": 442, stopwatch: 476, "fishing-net": 510, overdrive: 544, strong: 578, fist: 612, padlock: 646, "three-leaves": 680, "fluffy-wing": 714, pummeled: 748, tread: 782, arrowed: 816, aura: 850, "back-pain": 884, "black-flag": 918, "bleeding-eye": 952, "bolt-shield": 986, "broken-heart": 1020, cobweb: 1054, "broken-shield": 1088, "flying-flag": 1122, radioactive: 1156, trophy: 1190, "broken-skull": 1224, "frozen-orb": 1258, "rolling-bomb": 1292, "white-tower": 1326, grab: 1360, screaming: 1394,  grenade: 1428,  "sentry-gun": 1462,  "all-for-one": 1496,  "angel-outfit": 1530,  "archery-target": 1564};
+
+        if (typeof marker_pos[marker] === 'undefined') return false;
+
+        if (Number.isInteger(marker_pos[marker])) {
+            marker_style += 'background-image: url(https://roll20.net/images/statussheet.png);'
+            + 'background-repeat: no-repeat; background-position: -' + marker_pos[marker] + 'px 0;';
+        } else if (marker_pos[marker] === 'X') {
+            marker_style += 'color: red; font-size: 32px; font-weight: bold; text-align: center; padding-top: 5px; overflow: hidden;';
+            X = 'X';
+        } else {
+            marker_style += 'background-color: ' + marker_pos[marker]
+            + '; border: 1px solid #fff; border-radius: 50%;';
+        }
+
+        marker_style += style;
+
+        return '<div style="' + marker_style + '">' + X + '</div>';
+    },
 
     corpseListener = function (token, prev) {
         if (state['RemoveTheCorpse'].autoRemove && token.get('status_' + state['RemoveTheCorpse'].deadMarker)) {
