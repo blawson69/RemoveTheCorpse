@@ -74,14 +74,15 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
         var message = '<h4>!rtc &lt;token_id&gt;</h4>Manually removes the token with '
         + 'the matching id from the turn tracker.<br><br><h4>Auto Remove</h4>';
         if (state['RemoveTheCorpse'].autoRemove) {
-            message += 'You are currently configured to automatically remove a token from the turn tracker whenever the Dead Marker is applied to it.<br><div align="center"><a style="' + styles.button + '" href="!rtc toggleAuto">Turn Off</a></div>';
+            message += 'You are currently configured to automatically remove a token from the turn tracker whenever the Dead Marker is applied to it.<br><div align="center"><a style="'
+            + styles.button + '" href="!rtc toggleAuto">Turn Off</a></div>';
         } else {
             message += 'You are currently configured only for manual removal of tokens from the turn tracker. If you wish to automatically remove tokens '
-            + 'when the Dead Marker is set on them, you may do so. This applies to <i>all</i> tokens.<br><div align="center"><a style="' + styles.button + '" href="!rtc toggleAuto">Turn On</a></div>';
+            + 'when the Dead Marker is set on them, you may do so. This applies to <i>all</i> tokens.<br><div align="center"><a style="' + styles.button
+            + '" href="!rtc toggleAuto">Turn On</a></div>';
         }
         message += '<h4>Dead Marker</h4>' + getMarker(state['RemoveTheCorpse'].deadMarker, marker_style)
-        + 'The current status marker to indicate a dead token during auto removal is "'
-        + state['RemoveTheCorpse'].deadMarker + '".<br>';
+        + 'The current status marker to indicate a dead token during auto removal is "' + state['RemoveTheCorpse'].deadMarker + '".<br>';
         message += '<div align="center"><a style="' + styles.button + '" href="!rtc markers">Change Marker</a></div>';
         showDialog('Help Menu', message);
     },
@@ -108,10 +109,10 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
 	},
 
     showMarkers = function () {
-        var status_markers = ['red', 'angel-outfit', 'broken-skull', 'dead', 'death-zone', 'skull'];
-        var message = '<table style="border: 0; align: center;" cellpadding="0" cellspacing="2">';
+        var status_markers = ['red', 'dead', 'skull', 'death-zone', 'broken-skull', 'angel-outfit'];
+        var message = '<table style="border: 0; width: 100%;" cellpadding="0" cellspacing="2">';
         _.each(status_markers, function(marker) {
-            message += '<tr><td style="white-space: nowrap;">' + getMarker(marker, 'margin-right: 10px;') + '</td><td style="white-space: nowrap; width: 100%;">' + marker + '</td>';
+            message += '<tr><td>' + getMarker(marker, 'margin-right: 10px;') + '</td><td style="white-space: nowrap; width: 100%;">' + marker + '</td>';
             if (marker == state['RemoveTheCorpse'].deadMarker) {
                 message += '<td style="text-align: center;">Current</td>';
             } else {
@@ -119,9 +120,8 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
             }
             message += '</tr>';
         });
-        message += '<tr><td colspan="3" style="text-align: center;"><a style="' + styles.button
-        + '" href="!rtc help">&#9668; Back</a> &nbsp; <a style="' + styles.button
-        + '" href="!rtc setMarker &#63;&#123;Status Marker&#124;&#125;">Different Marker</a></td></tr>';
+        message += '<tr><td colspan="3" style="text-align: center;"><a style="' + styles.button + '" href="!rtc help">&#9668; Back</a> &nbsp; <a style="'
+        + styles.button + '" href="!rtc setMarker &#63;&#123;Status Marker&#124;&#125;">Different Marker</a></td></tr>';
         message += '</table>';
         showDialog('Choose Dead Marker', message);
     },
@@ -140,8 +140,7 @@ var RemoveTheCorpse = RemoveTheCorpse || (function () {
             marker_style += 'color: #C91010; font-size: 32px; font-weight: bold; text-align: center; padding-top: 5px; overflow: hidden;';
             X = 'X';
         } else {
-            marker_style += 'background-color: ' + marker_pos[marker]
-            + '; border: 1px solid #fff; border-radius: 50%;';
+            marker_style += 'background-color: ' + marker_pos[marker] + '; border: 1px solid #fff; border-radius: 50%;';
         }
 
         marker_style += style;
